@@ -3,3 +3,8 @@
 data/
 *.parquet
 
+
+# data
+data/
+*.parquet
+
