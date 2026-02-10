@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Recommender System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #c33;
+        }
+
+        .error.active {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-header {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .recipe-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .recipe-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .recipe-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 600;
+            margin-right: 12px;
+            font-size: 0.9rem;
+        }
+
+        .recipe-name {
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .recipe-category {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .recipe-id {
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍳 Recipe Recommender</h1>
+        <p class="subtitle">Get personalized recipe recommendations based on your taste</p>
+
+        <div class="input-group">
+            <input 
+                type="number" 
+                id="reviewerId" 
+                placeholder="Enter your Reviewer ID (e.g., 2008)"
+                min="1"
+            >
+            <button onclick="getRecommendations()">Get Recommendations</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <p>🔍 Finding the perfect recipes for you...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="results" id="results">
+            <h2 class="results-header">Your Top 5 Recommended Recipes</h2>
+            <div id="recipeList"></div>
+        </div>
+    </div>
+
+    <script>
+        async function getRecommendations() {
+            const reviewerId = document.getElementById('reviewerId').value;
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const results = document.getElementById('results');
+            const recipeList = document.getElementById('recipeList');
+
+            // Reset states
+            error.classList.remove('active');
+            results.classList.remove('active');
+            recipeList.innerHTML = '';
+
+            // Validation
+            if (!reviewerId || reviewerId < 1) {
+                error.textContent = '⚠️ Please enter a valid Reviewer ID';
+                error.classList.add('active');
+                return;
+            }
+
+            // Show loading
+            loading.classList.add('active');
+
+            try {
+                const response = await fetch(`http://localhost:2222/recommend/${reviewerId}?k=5`);
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Hide loading
+                loading.classList.remove('active');
+
+                if (data.recommendations && data.recommendations.length > 0) {
+                    // Display results
+                    data.recommendations.forEach((recipe, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'recipe-card';
+                        card.innerHTML = `
+                            <div>
+                                <span class="recipe-number">${index + 1}</span>
+                                <span class="recipe-name">${recipe.Name}</span>
+                            </div>
+                            <div style="margin-top: 12px;">
+                                <span class="recipe-category">${recipe.RecipeCategory}</span>
+                            </div>
+                            <div class="recipe-id">Recipe ID: ${Math.round(recipe.RecipeId)}</div>
+                        `;
+                        recipeList.appendChild(card);
+                    });
+
+                    results.classList.add('active');
+                } else {
+                    error.textContent = '😕 No recommendations found for this Reviewer ID. Try another one!';
+                    error.classList.add('active');
+                }
+
+            } catch (err) {
+                loading.classList.remove('active');
+                error.textContent = `❌ Error: ${err.message}. Please make sure the server is running on port 2222.`;
+                error.classList.add('active');
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('reviewerId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                getRecommendations();
+            }
+        });
+    </script>
+</body>
+</html>

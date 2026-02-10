@@ -6,3 +6,6 @@ scikit-learn
 pandas
 numpy
 scipy
+xgboost
+fastapi
+uvicorn

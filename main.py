@@ -1,41 +1,27 @@
+import sys
 import os
-import polars as pl
-from src.data_loader import DataLoader
-from src.preprocessing import DataPreprocessor
-from src.models import PopularityModel, SVDModel
-from src.evaluation import evaluate_model
+import argparse
 
-def run_pipeline():
-    # 1. Load Data
-    loader = DataLoader(data_dir="data/raw")
-    try:
-        recipes = loader.load_recipes()
-        reviews = loader.load_reviews()
-    except FileNotFoundError:
-        print("Error: Raw data parquet files not found in data/raw/. Please ensure they are placed there.")
-        return
+# Add current directory to path so that 'src' is importable
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-    # 2. Preprocess
-    preprocessor = DataPreprocessor()
-    processed_reviews = preprocessor.preprocess_reviews(reviews)
-    train, test = preprocessor.split_data(processed_reviews)
+def main():
+    parser = argparse.ArgumentParser(description="Recipe Recommender System")
+    parser.add_argument("--mode", type=str, choices=["train", "serve", "all"], default="all",
+                        help="Mode: train, serve, or all (train and then serve)")
     
-    # 3. Save Processed Data
-    os.makedirs("data/processed", exist_ok=True)
-    train.write_parquet("data/processed/train_interactions.parquet")
-    test.write_parquet("data/processed/test_interactions.parquet")
-    print("Processed data saved to data/processed/")
+    args = parser.parse_args()
 
-    # 4. Fit & Evaluate Models
-    models = {
-        "Popularity": PopularityModel(top_k=100),
-        "SVD": SVDModel(n_components=50)
-    }
-    
-    for name, model in models.items():
-        model.fit(train)
-        recall, ndcg = evaluate_model(model, test, k=10, sample_size=500)
-        print(f"[{name}] Recall@10: {recall:.4f} | NDCG@10: {ndcg:.4f}")
+    if args.mode in ["train", "all"]:
+        print("Starting Training and Evaluation Phase...")
+        from src.train_and_evaluate_all import main as train_main
+        train_main()
+
+    if args.mode in ["serve", "all"]:
+        print("Starting FastAPI Server on port 2222...")
+        import uvicorn
+        from src.api import app
+        uvicorn.run(app, host="0.0.0.0", port=2222)
 
 if __name__ == "__main__":
-    run_pipeline()
+    main()
