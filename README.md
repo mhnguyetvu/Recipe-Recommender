@@ -2,6 +2,9 @@
 
 A personalized Top-N recipe recommendation system using Polars for high-performance data processing and Matrix Factorization for modeling.
 
+## Dataset
+https://www.kaggle.com/datasets/irkaal/foodcom-recipes-and-reviews
+
 ## Project Structure
 
 ```

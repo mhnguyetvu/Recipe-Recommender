@@ -1,4 +1,7 @@
 import polars as pl
+import numpy as np
+import pandas as pd
+import ast
 
 class DataPreprocessor:
     @staticmethod
@@ -35,3 +38,49 @@ class DataPreprocessor:
         test = test.filter(pl.col("AuthorId").is_in(train_users))
 
         return train, val, test
+    
+    @staticmethod
+    def create_ingredient_text(x):
+        # None / NaN (scalar)
+        if x is None:
+            return ""
+        if isinstance(x, float) and np.isnan(x):
+            return ""
+
+        # Nếu là numpy array -> list
+        if isinstance(x, np.ndarray):
+            x = x.tolist()
+
+        # Nếu là string -> parse nếu giống list
+        if isinstance(x, str):
+            s = x.strip()
+            if s.startswith("[") and s.endswith("]"):
+                try:
+                    x = ast.literal_eval(s)
+                except Exception:
+                    return s.lower()
+            else:
+                return s.lower()
+
+        # Nếu rỗng
+        if isinstance(x, (list, tuple)) and len(x) == 0:
+            return ""
+
+        # Join list/tuple
+        if isinstance(x, (list, tuple)):
+            out = []
+            for ing in x:
+                if ing is None:
+                    continue
+                if isinstance(ing, float) and np.isnan(ing):
+                    continue
+                if isinstance(ing, np.ndarray):
+                    ing = " ".join(map(str, ing.tolist()))
+                s = str(ing).strip().lower()
+                if s != "":
+                    out.append(s)
+            return " ".join(out)
+
+        # Fallback
+        return str(x).strip().lower()
+
