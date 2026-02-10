@@ -1,10 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
 .ipynb_checkpoints/
-# data
+*.ipynb_checkpoints
+
+# Data files
 data/
 *.parquet
+*.csv
+*.pkl
+*.h5
 
+# MacOS
+.DS_Store
 
-# data
-data/
-*.parquet
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
+# Model files
+*.model
+*.pkl
+*.joblib
+
+# Logs
+*.log
+logs/
