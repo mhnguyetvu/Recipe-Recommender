@@ -9,3 +9,4 @@ scipy
 xgboost
 fastapi
 uvicorn
+prometheus-client

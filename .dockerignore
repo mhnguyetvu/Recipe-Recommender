@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Data (too large for container)
+data/raw/
+*.parquet
+
+# Notebooks
+notebooks/
+*.ipynb
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Monitoring (mounted as volumes)
+monitoring/
+
+# MacOS
+.DS_Store
+
+# Documentation
+*.md
+!README.md
+
+# Models (mounted as volumes)
+models/*.pkl
+models/*.joblib

@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Scrape FastAPI metrics
+  - job_name: "recipe-recommender-api"
+    static_configs:
+      - targets: ["api:2222"]
+    metrics_path: "/metrics"

@@ -39,3 +39,7 @@ data/
 # Logs
 *.log
 logs/
+
+__pycache__/
+*.pyc
+
